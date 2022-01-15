@@ -1,0 +1,90 @@
+
+
+\documentclass{article}
+
+\usepackage{karnaugh-map}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{comment}
+
+\title{Assignment 1 | FPGA Lab}
+\author{Sankala Sreekanth}
+%\date{January 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Question}
+Reduce the following Boolean expression to its simplest form using K-Map
+\begin{equation}
+    F(X,Y,Z,W) = \sum (0,1,6,8,9,10,11,12,15)
+\end{equation}
+
+\section{Solution}
+
+
+Represent the given Boolean expression in K-Map and follow the K-Map rules to reduce the given Boolean form to simplest form 
+
+
+
+\begin{karnaugh-map}[4][4][1][$ZW$][$XY$]
+        \minterms{0,1,6,8,9,10,11,12,15}
+        \maxterms{2,3,4,5,7,13,14}
+        \implicant{12}{8}
+        \implicantedge{0}{1}{8}{9}
+        \implicant{8}{10}
+        \implicant{15}{11}
+        \implicant{6}{6}
+\end{karnaugh-map}
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{Y} . \overline{Z} +  X . \overline{Y} +  X . \overline{Z}. \overline{W} +  X . Z . W +  \overline{X} . Y . Z . \overline{W}
+\end{equation}
+
+\section{Implimentation using NAND gate}
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{\overline{ \overline{Y} . \overline{Z} +  X . \overline{Y} +  X . \overline{Z}. \overline{W} +  X . Z . W +  \overline{X} . Y . Z . \overline{W}}}
+\end{equation}
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{  \overline{\overline{Y} . \overline{Z}} +  \overline{ X . \overline{Y} } +  \overline{ X . \overline{Z}. \overline{W} } +  \overline{ X . Z . W } +  \overline{ { \overline{X} . Y . Z . \overline{W} } } }
+\end{equation}
+
+\begin{comment}
+
+
+
+
+\begin{table} [ht]
+    \centering
+    \begin{tabular}{ | p{1cm} | p{1cm} | p{1cm} | p{1cm} | p{2cm}  |}
+    \hline
+    X & Y & Z & W & F(X,Y,Z,W)\\ [0.5ex]
+     \hline
+     
+    0 & 0 & 0 & 0 & 1\\
+    0 & 0 & 0 & 1 & 1\\
+    0 & 0 & 1 & 0 & 0\\
+    0 & 0 & 1 & 1 & 0\\
+    0 & 1 & 0 & 0 & 0\\
+    0 & 1 & 0 & 1 & 0\\
+    0 & 1 & 1 & 0 & 1\\
+    0 & 1 & 1 & 1 & 0\\
+    1 & 0 & 0 & 0 & 1\\
+    1 & 0 & 0 & 1 & 1\\
+    1 & 0 & 1 & 0 & 1\\
+    1 & 0 & 1 & 1 & 1\\
+    1 & 1 & 0 & 0 & 1\\
+    1 & 1 & 0 & 1 & 0\\
+    1 & 1 & 1 & 0 & 0\\
+    1 & 1 & 1 & 1 & 1\\ [1ex]
+    \hline
+    \end{tabular}
+    \label{fig1}
+    \caption{Truth Table}
+\end{table}
+\end{comment}
+\end{document}
+
