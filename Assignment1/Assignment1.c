@@ -27,7 +27,7 @@ int main()
 {
    bool X = true, Y = false, Z = false, W = false;
    bool F;
-   bool term1, term2, term3, term4, term5; // These terms are for readability
+   bool term1, term2, term3, term4, term5; // Five terms are for readability
 
    term1 = nand2(nand2(Y,Y),nand2(Z,Z));
    term2 = nand2(X,nand2(Y,Y));
