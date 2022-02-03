@@ -1,0 +1,250 @@
+
+
+\documentclass{article}
+
+\usepackage{karnaugh-map}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{comment}
+\usepackage{circuitikz}
+\usepackage{tikz}
+\usetikzlibrary{shapes.gates.logic.US}
+\usetikzlibrary{circuits.ee.IEC}
+\usepackage[margin=0.92in]{geometry}
+
+\title{Assignment 2 | FPGA Lab}
+\author{Sankala Sreekanth, EE20RESCH11011}
+%\date{January 2022}
+
+\begin{document}
+
+\maketitle
+
+%\setlength{\voffset}{-0.9in}
+%\setlength{\headsep}{2pt}
+
+
+\section{Question}
+Reduce the following Boolean expression to its simplest form using K-Map
+\begin{equation}
+    F(X,Y,Z,W) = \sum (0,1,6,8,9,10,11,12,15)
+\end{equation}
+Verify the above Boolean expression using using Arduino.
+
+
+
+\section{Solution}
+
+%Represent the given Boolean expression in K-Map and follow the K-Map rules to reduce the given Boolean form to simplest form 
+
+
+\begin{itemize}
+    \item Step1 : Enter ones in the cells of the K-Map denoting the product terms of the give sum of products ( SOP ) form. Enter zeros in the remaining cells of the K-Map
+    
+    \begin{center}
+    \begin{karnaugh-map}[4][4][1][$ZW$][$XY$]
+        \minterms{0,1,6,8,9,10,11,12,15}
+        \maxterms{2,3,4,5,7,13,14}
+    \end{karnaugh-map}
+    \end{center}
+    
+    \item Step2 : From the groups in the K-Map.
+    
+    \end{itemize}
+    
+    \begin{center}
+    \begin{karnaugh-map}[4][4][1][$ZW$][$XY$]
+        \minterms{0,1,6,8,9,10,11,12,15}
+        \maxterms{2,3,4,5,7,13,14}
+        \implicant{12}{8}
+        \implicantedge{0}{1}{8}{9}
+        \implicant{8}{10}
+        \implicant{15}{11}
+        \implicant{6}{6}
+    \end{karnaugh-map}
+    \end{center}
+    
+    
+\begin{itemize}
+   
+    
+    \item Step3 : Write down the Boolean expression for each of the group in the K-Map 
+    
+\end{itemize}
+ 
+
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{Y} . \overline{Z} +  X . \overline{Y} +  X . \overline{Z}. \overline{W} +  X . Z . W +  \overline{X} . Y . Z . \overline{W}
+\end{equation}
+
+\section{Implementation using NAND gate}
+
+
+    %\item Take double complement of the simplified Boolean expression and use De Morgan's theorem ( i.e $\overline{(a + b)} = \overline{a}.\overline{b}$
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{\overline{ \overline{Y} . \overline{Z} +  X . \overline{Y} +  X . \overline{Z}. \overline{W} +  X . Z . W +  \overline{X} . Y . Z . \overline{W}}}
+\end{equation}
+
+\begin{equation}
+    F(X,Y,Z,W) = \overline{ ( \overline{\overline{Y} . \overline{Z}} ) \;\; .  \;\;   \overline{ ( X . \overline{Y} ) }  \;\;  .  \;\;   \overline{ ( X . \overline{Z}. \overline{W} ) }  \;\;  .  \;\;  \overline{ ( X . Z . W ) }  \;\;  .  \;\;  \overline{ ( { \overline{X} . Y . Z . \overline{W} } ) } }
+\end{equation}
+
+
+%\section{Circuit Diagram}
+
+\begin{figure}[h]
+\centering
+\begin{circuitikz}[label distance=2mm, scale=2,
+  connection/.style={draw,circle,fill=red,inner sep=1.5pt}
+  ]
+
+
+%Define nodes for inputs  
+\node (x) at (0.5,0) {$X$};
+\node (y) at (1.5,0) {$Y$};
+\node (z) at (2.5,0) {$Z$};
+\node (w) at (3.5,0) {$W$};
+
+%Define nodes for complementary inputs 
+\node[nand gate US, draw, rotate=-90, logic gate inputs=nn, scale=1.5] at ($(x)+(0.5,-1)$) (xb) {};
+\node[nand gate US, draw, rotate=-90, logic gate inputs=nn, scale=1.5] at ($(y)+(0.5,-1)$) (yb) {};
+\node[nand gate US, draw, rotate=-90, logic gate inputs=nn, scale=1.5] at ($(z)+(0.5,-1)$) (zb) {};
+\node[nand gate US, draw, rotate=-90, logic gate inputs=nn, scale=1.5] at ($(w)+(0.5,-1)$) (wb) {};
+
+
+%Define NAND gates for second level ( inputs=nn , refers to the number of inputs ) 
+\node[nand gate US, draw, rotate=0, logic gate inputs=nn, scale=1.5] at ($(w)+(1.5,-2)$) (t1) {};
+\node[nand gate US, draw, rotate=0, logic gate inputs=nn, scale=1.5] at ($(w)+(1.5,-3)$) (t2) {};
+\node[nand gate US, draw, rotate=0, logic gate inputs=nnn, scale=1.5] at ($(w)+(1.5,-4)$) (t3) {};
+\node[nand gate US, draw, rotate=0, logic gate inputs=nnn, scale=1.5] at ($(w)+(1.5,-5)$) (t4) {};
+\node[nand gate US, draw, rotate=0, logic gate inputs=nnnn, scale=1.5] at ($(w)+(1.5,-6)$) (t5) {};
+
+
+%Define output NAND gate 
+\node[nand gate US, draw, logic gate inputs=nnnnn, scale=2] at ($(t4.output) + (2, 1)$) (F) {};
+
+
+%Writing implicates 
+\node (im1) at ($(t1.output)+(0.2,0.2)$) {$\bar{Y}.\bar{Z}$};
+\node (im2) at ($(t2.output)+(0.2,0.2)$) {$X.\bar{Y}$};
+\node (im3) at ($(t3.output)+(0.2,-0.2)$) {$X.\bar{Z}.\bar{W}$};
+\node (im4) at ($(t4.output)+(0.2,0.2)$) {$X.Z.W$};
+\node (im5) at ($(t5.output)+(0.2,-0.2)$) {$\bar{X}.Y.Z.\bar{W}$};
+
+
+\draw (x) -- ($(x) + (0,-7.5)$);
+\draw (y) -- ($(y) + (0,-7.5)$);
+\draw (z) -- ($(z) + (0,-7.5)$);
+\draw (w) -- ($(w) + (0,-7.5)$);
+
+%Connection between inputs and to NAND gate ( complement )
+\draw (0.5,-0.5) -| (xb.input 1) ;
+\draw (0.5,-0.5) -| (xb.input 2) ;
+\draw (1.5,-0.5) -| (yb.input 1) ;
+\draw (1.5,-0.5) -| (yb.input 2) ;
+\draw (2.5,-0.5) -| (zb.input 1) ;
+\draw (2.5,-0.5) -| (zb.input 2) ;
+\draw (3.5,-0.5) -| (wb.input 1) ;
+\draw (3.5,-0.5) -| (wb.input 2) ;
+
+%Line from complementary inputs 
+\draw (xb.output) -- ($(x) + (0.5,-7.5)$);
+\draw (yb.output) -- ($(y) + (0.5,-7.5)$);
+\draw (zb.output) -- ($(z) + (0.5,-7.5)$);
+\draw (wb.output) -- ($(w) + (0.5,-7.5)$);
+
+%Inputs to first NAND gate 
+\draw (yb.output) |- (t1.input 1) node[connection,pos=0.5]{};
+\draw (zb.output) |- (t1.input 2) node[connection,pos=0.5]{};
+
+%Inputs to second NAND gate 
+\draw (x) |- (t2.input 1) node[connection,pos=0.5]{};
+\draw (yb.output) |- (t2.input 2) node[connection,pos=0.5]{};
+
+%Inputs to third NAND gate 
+\draw (x) |- (t3.input 1) node[connection,pos=0.5]{};
+\draw (zb) |- (t3.input 2) node[connection,pos=0.5]{};
+\draw (wb.output) |- (t3.input 3) node[connection,pos=0.5]{};
+
+
+%Inputs to fourth NAND gate 
+\draw (x) |- (t4.input 1) node[connection,pos=0.5]{};
+\draw (z) |- (t4.input 2) node[connection,pos=0.5]{};
+\draw (w) |- (t4.input 3) node[connection,pos=0.5]{};
+
+
+%Inputs to fifth NAND gate 
+\draw (xb) |- (t5.input 1) node[connection,pos=0.5]{};
+\draw (y) |- (t5.input 2) node[connection,pos=0.5]{};
+\draw (z) |- (t5.input 3) node[connection,pos=0.5]{};
+\draw (wb) |- (t5.input 4) node[connection,pos=0.5]{};
+
+
+
+%Inputs to output NAND gate 
+\draw (t1.output) -- ([xshift=0.7cm]t1.output) |- (F.input 1);
+\draw (t2.output) -- ([xshift=0.6cm]t2.output) |- (F.input 2);
+\draw (t3.output) -- ([xshift=0.7cm]t3.output) |- (F.input 3);
+\draw (t4.output) -- ([xshift=0.7cm]t4.output) |- (F.input 4);
+\draw (t5.output) -- ([xshift=0.7cm]t5.output) |- (F.input 5);
+
+
+\draw (F.output) -- node[above]{$F$} ($(F) + (1, 0)$);
+
+
+\end{circuitikz}
+\caption{ Circuit Diagram for the simplified Boolean expression using NAND gate }
+\label{ckt1}
+\end{figure}
+
+\section{Verification of the Boolean expression through Arduino}
+\subsection{Code to generate the .bin file.}
+
+\begin{verbatim}
+
+#include <Arduino.h>
+# define X 2
+# define Y 3
+# define Z 4
+# define W 5
+int x,y,z,w,term1,term2,term3,term4,term5,out;
+void setup() {
+  pinMode(LED_BUILTIN,OUTPUT);
+  pinMode(X,INPUT);
+  pinMode(Y,INPUT);
+  pinMode(Z,INPUT);
+  pinMode(W,INPUT);
+}
+int nand2(int x, int y) // Two input NAND gate
+{  return !(x && y); }
+int nand3(int x, int y, int z) // Three input NAND gate
+{  return !((x && y) && z); }
+int nand4(int x, int y, int z, int w) // 4 input NAND gate 
+{  return !((x && y) && (z && w)); }
+int nand5(int x, int y, int z, int w, int a) // 5 input NAND gate
+{  return !((x && y) && (z && w) && a );  }
+void loop() {
+    x=digitalRead(X);
+    y=digitalRead(Y);
+    z=digitalRead(Z);
+    w=digitalRead(W);
+    term1 = nand2(nand2(y,y),nand2(z,z));
+    term2 = nand2(x,nand2(y,y));
+    term3 = nand3(x,nand2(z,z),nand2(w,w));
+    term4 = nand3(x,z,w);
+    term5 = nand4(nand2(x,x),y,z,nand2(w,w));
+    out = nand5(term1,term2,term3,term4,term5);
+    if(out==1)
+        digitalWrite(LED_BUILTIN,HIGH);
+    else
+        digitalWrite(LED_BUILTIN,LOW);
+}
+
+\end{verbatim}
+
+
+
+\end{document}
+
